@@ -1,5 +1,5 @@
 <?php
-require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require_once dirname(dirname(dirname(__FILE__))) . '/config.php';
 
 require_login();
 
@@ -17,16 +17,16 @@ $context = $PAGE->context;
 $isadmin = is_siteadmin($USER);
 $COURSE_ROLED_AS_TEACHER = $DB->get_record_sql("
     SELECT m.id
-    FROM {user} m 
-    LEFT JOIN {role_assignments} m2 ON m.id = m2.userid 
-    LEFT JOIN {context} m3 ON m2.contextid = m3.id 
-    LEFT JOIN {course} m4 ON m3.instanceid = m4.id 
-    WHERE (m3.contextlevel = 50 AND m2.roleid IN (3, 4) AND m.id IN ({$USER->id})) 
-    AND m4.id = {$courseid} 
+    FROM {user} m
+    LEFT JOIN {role_assignments} m2 ON m.id = m2.userid
+    LEFT JOIN {context} m3 ON m2.contextid = m3.id
+    LEFT JOIN {course} m4 ON m3.instanceid = m4.id
+    WHERE (m3.contextlevel = 50 AND m2.roleid IN (3, 4) AND m.id IN ({$USER->id}))
+    AND m4.id = {$courseid}
 ");
 
-if (!$isadmin && (!isset($COURSE_ROLED_AS_TEACHER->id) || !$COURSE_ROLED_AS_TEACHER->id)) {
-    redirect(new moodle_url('/course/view.php', array('id' => $courseid)), 
+if (!$isadmin && (!isset($COURSE_ROLED_AS_TEACHER->id) || !$COURSE_ROLED_AS_TEACHER->id)){
+    redirect(new moodle_url('/course/view.php', array('id' => $courseid)),
              get_string('no_admin_access', 'block_personality_test'));
 }
 
@@ -39,7 +39,7 @@ if ($action === 'delete' && $userid && confirm_sesskey()) {
     if ($confirm) {
         // Eliminar registro global del test del usuario
         $DB->delete_records('personality_test', array('user' => $userid));
-        redirect(new moodle_url('/blocks/personality_test/admin_view.php', array('cid' => $courseid)), 
+        redirect(new moodle_url('/blocks/personality_test/admin_view.php', array('cid' => $courseid)),
                  get_string('participation_deleted', 'block_personality_test'));
     }
 }
@@ -124,10 +124,10 @@ if ($action === 'delete' && $userid) {
         echo "<h4>" . get_string('confirm_delete', 'block_personality_test') . "</h4>";
         echo "<p>" . get_string('confirm_delete_message', 'block_personality_test', fullname($user)) . "</p>";
         echo "<div class='mt-3'>";
-        echo "<a href='" . new moodle_url('/blocks/personality_test/admin_view.php', 
-                array('cid' => $courseid, 'action' => 'delete', 'userid' => $userid, 'confirm' => 1, 'sesskey' => sesskey())) . 
+        echo "<a href='" . new moodle_url('/blocks/personality_test/admin_view.php',
+                array('cid' => $courseid, 'action' => 'delete', 'userid' => $userid, 'confirm' => 1, 'sesskey' => sesskey())) .
                 "' class='btn btn-danger'>" . get_string('confirm_delete_yes', 'block_personality_test') . "</a> ";
-        echo "<a href='" . new moodle_url('/blocks/personality_test/admin_view.php', array('cid' => $courseid)) . 
+        echo "<a href='" . new moodle_url('/blocks/personality_test/admin_view.php', array('cid' => $courseid)) .
                 "' class='btn btn-secondary'>" . get_string('cancel', 'block_personality_test') . "</a>";
         echo "</div>";
         echo "</div>";
@@ -137,29 +137,29 @@ if ($action === 'delete' && $userid) {
     // Get enrolled students in this course (only students, roleid = 5)
     $enrolled_students = get_role_users(5, $context, false, 'u.id, u.firstname, u.lastname');
     $enrolled_ids = array_keys($enrolled_students);
-    
+
     // Total students in course
     $total_students = count($enrolled_students);
-    
+
     // Count participants who are enrolled in this course
     $completed_tests = 0;
     $in_progress_tests = 0;
     if (!empty($enrolled_ids)) {
         list($insql, $params) = $DB->get_in_or_equal($enrolled_ids, SQL_PARAMS_NAMED);
-        
+
         // Count completed tests
         $params_completed = $params;
         $params_completed['completed'] = 1;
         $completed_tests = $DB->count_records_select('personality_test', "user $insql AND is_completed = :completed", $params_completed);
-        
+
         // Count in-progress tests
         $params_progress = $params;
         $params_progress['completed'] = 0;
         $in_progress_tests = $DB->count_records_select('personality_test', "user $insql AND is_completed = :completed", $params_progress);
     }
-    
+
     echo "<div class='row mb-4'>";
-    
+
     // Total students card
     echo "<div class='col-md-4'>";
     echo "<div class='card border-info'>";
@@ -170,7 +170,7 @@ if ($action === 'delete' && $userid) {
     echo "</div>";
     echo "</div>";
     echo "</div>";
-    
+
     // Completed tests card
     echo "<div class='col-md-4'>";
     echo "<div class='card border-success'>";
@@ -181,7 +181,7 @@ if ($action === 'delete' && $userid) {
     echo "</div>";
     echo "</div>";
     echo "</div>";
-    
+
     // In progress tests card
     echo "<div class='col-md-4'>";
     echo "<div class='card border-warning'>";
@@ -192,7 +192,7 @@ if ($action === 'delete' && $userid) {
     echo "</div>";
     echo "</div>";
     echo "</div>";
-    
+
     echo "</div>";
 
     // Obtener participantes con información del usuario
@@ -205,7 +205,7 @@ if ($action === 'delete' && $userid) {
                 JOIN {user} u ON pt.user = u.id
                 WHERE pt.user $insql
                 ORDER BY pt.created_at DESC";
-        
+
         $participants = $DB->get_records_sql($sql, $params);
     }
 
@@ -221,17 +221,17 @@ if ($action === 'delete' && $userid) {
         echo "<h5 class='mb-0 d-inline'>" . get_string('participants_list', 'block_personality_test') . "</h5>";
         echo "</div>";
         echo "<div class='card-body'>";
-        
+
         // Filtros y búsqueda
         echo "<div class='row mb-3'>";
         echo "<div class='col-md-6'>";
-        echo "<input type='text' id='searchInput' class='form-control' placeholder='" . 
+        echo "<input type='text' id='searchInput' class='form-control' placeholder='" .
              get_string('search_participant', 'block_personality_test') . "'>";
         echo "</div>";
         echo "<div class='col-md-6'>";
-        echo "<button class='btn btn-primary' onclick='exportData(\"csv\")'>" . 
+        echo "<button class='btn btn-primary' onclick='exportData(\"csv\")'>" .
              get_string('export_csv', 'block_personality_test') . "</button> ";
-        echo "<button class='btn btn-success' onclick='exportData(\"pdf\")'>" . 
+        echo "<button class='btn btn-success' onclick='exportData(\"pdf\")'>" .
              get_string('export_pdf', 'block_personality_test') . "</button>";
         echo "</div>";
         echo "</div>";
@@ -262,7 +262,7 @@ if ($action === 'delete' && $userid) {
             echo "</div>";
             echo "</td>";
             echo "<td>" . $participant->email . "</td>";
-            
+
             // Estado y Progreso
             echo "<td>";
             if ($participant->is_completed == 1) {
@@ -280,7 +280,7 @@ if ($action === 'delete' && $userid) {
                 echo "<br><small class='text-muted'>" . get_string('of_72_questions', 'block_personality_test', $answered) . "</small>";
             }
             echo "</td>";
-            
+
             // Tipo MBTI (solo si está completado)
             echo "<td>";
             if ($participant->is_completed == 1) {
@@ -294,16 +294,16 @@ if ($action === 'delete' && $userid) {
                 echo "<span class='text-muted'>-</span>";
             }
             echo "</td>";
-            
+
             echo "<td>" . date('d/m/Y H:i', $participant->created_at) . "</td>";
             echo "<td>";
-            echo "<a href='" . new moodle_url('/blocks/personality_test/view_individual.php', 
-                    array('userid' => $participant->user, 'cid' => $courseid)) . 
+            echo "<a href='" . new moodle_url('/blocks/personality_test/view_individual.php',
+                    array('userid' => $participant->user, 'cid' => $courseid)) .
                     "' class='btn btn-sm btn-info me-1' title='" . get_string('view_results', 'block_personality_test') . "'>";
             echo "<i class='fa fa-eye'></i> " . get_string('view', 'block_personality_test');
             echo "</a>";
-            echo "<a href='" . new moodle_url('/blocks/personality_test/admin_view.php', 
-                    array('cid' => $courseid, 'action' => 'delete', 'userid' => $participant->user, 'sesskey' => sesskey())) . 
+            echo "<a href='" . new moodle_url('/blocks/personality_test/admin_view.php',
+                    array('cid' => $courseid, 'action' => 'delete', 'userid' => $participant->user, 'sesskey' => sesskey())) .
                     "' class='btn btn-sm btn-danger' title='" . get_string('delete_participation', 'block_personality_test') . "'>";
             echo "<i class='fa fa-trash'></i> " . get_string('delete', 'block_personality_test');
             echo "</a>";
@@ -332,22 +332,22 @@ echo "</div>";
 echo "<script>
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
-    
+
     function filterTable() {
         const filter = searchInput.value.toLowerCase();
         const rows = document.querySelectorAll('#participantsTable .participant-row');
-        
+
         rows.forEach(row => {
             const text = row.textContent.toLowerCase();
             const matchesSearch = text.includes(filter);
             row.style.display = matchesSearch ? '' : 'none';
         });
     }
-    
+
     if (searchInput) {
         searchInput.addEventListener('input', filterTable);
     }
-    
+
     // Función para exportar datos
     window.exportData = function(format) {
         if (format === 'csv') {
