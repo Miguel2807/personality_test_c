@@ -1,6 +1,7 @@
-<?php
-require_once dirname(dirname(dirname(__FILE__))) . '/config.php';
 
+<?php
+define('ADMIN_VIEW_PATH', '/blocks/personality_test/admin_view.php');
+require_once dirname(dirname(dirname(__FILE__))) . '/config.php';
 require_login();
 
 $courseid = optional_param('cid', 0, PARAM_INT);
@@ -39,12 +40,12 @@ if ($action === 'delete' && $userid && confirm_sesskey()) {
     if ($confirm) {
         // Eliminar registro global del test del usuario
         $DB->delete_records('personality_test', array('user' => $userid));
-        redirect(new moodle_url('/blocks/personality_test/admin_view.php', array('cid' => $courseid)),
+        redirect(new moodle_url(ADMIN_VIEW_PATH, array('cid' => $courseid)),
                  get_string('participation_deleted', 'block_personality_test'));
     }
 }
 
-$PAGE->set_url('/blocks/personality_test/admin_view.php', array('cid' => $courseid));
+$PAGE->set_url(ADMIN_VIEW_PATH, array('cid' => $courseid));
 $title = get_string('admin_manage_title', 'block_personality_test');
 $PAGE->set_pagelayout('standard');
 $PAGE->set_title($title . " : " . $course->fullname);
@@ -124,10 +125,10 @@ if ($action === 'delete' && $userid) {
         echo "<h4>" . get_string('confirm_delete', 'block_personality_test') . "</h4>";
         echo "<p>" . get_string('confirm_delete_message', 'block_personality_test', fullname($user)) . "</p>";
         echo "<div class='mt-3'>";
-        echo "<a href='" . new moodle_url('/blocks/personality_test/admin_view.php',
+        echo "<a href='" . new moodle_url(ADMIN_VIEW_PATH,
                 array('cid' => $courseid, 'action' => 'delete', 'userid' => $userid, 'confirm' => 1, 'sesskey' => sesskey())) .
                 "' class='btn btn-danger'>" . get_string('confirm_delete_yes', 'block_personality_test') . "</a> ";
-        echo "<a href='" . new moodle_url('/blocks/personality_test/admin_view.php', array('cid' => $courseid)) .
+        echo "<a href='" . new moodle_url(ADMIN_VIEW_PATH, array('cid' => $courseid)) .
                 "' class='btn btn-secondary'>" . get_string('cancel', 'block_personality_test') . "</a>";
         echo "</div>";
         echo "</div>";
@@ -302,7 +303,7 @@ if ($action === 'delete' && $userid) {
                     "' class='btn btn-sm btn-info me-1' title='" . get_string('view_results', 'block_personality_test') . "'>";
             echo "<i class='fa fa-eye'></i> " . get_string('view', 'block_personality_test');
             echo "</a>";
-            echo "<a href='" . new moodle_url('/blocks/personality_test/admin_view.php',
+            echo "<a href='" . new moodle_url(ADMIN_VIEW_PATH,
                     array('cid' => $courseid, 'action' => 'delete', 'userid' => $participant->user, 'sesskey' => sesskey())) .
                     "' class='btn btn-sm btn-danger' title='" . get_string('delete_participation', 'block_personality_test') . "'>";
             echo "<i class='fa fa-trash'></i> " . get_string('delete', 'block_personality_test');
