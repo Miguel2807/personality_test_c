@@ -4,7 +4,7 @@
  * Uso: /blocks/personality_test/test_release_system.php
  */
 
-require_once('../../config.php');
+require_once '../../config.php';
 
 require_login();
 
@@ -26,11 +26,11 @@ echo '<h2>🚀 Sistema de Releases - Personality Test</h2>';
 $version_file = $CFG->dirroot . '/blocks/personality_test/version.php';
 if (file_exists($version_file)) {
     $version_content = file_get_contents($version_file);
-    
+
     // Extraer versión y release
     preg_match('/version\s*=\s*(\d+)/', $version_content, $version_matches);
     preg_match('/release\s*=\s*[\'"]([^\'"]+)[\'"]/', $version_content, $release_matches);
-    
+
     $plugin_version = isset($version_matches[1]) ? $version_matches[1] : 'No encontrado';
     $plugin_release = isset($release_matches[1]) ? $release_matches[1] : 'No encontrado';
 } else {
@@ -124,13 +124,13 @@ if (file_exists($student_path_version_file)) {
     $sp_content = file_get_contents($student_path_version_file);
     preg_match('/version\s*=\s*(\d+)/', $sp_content, $sp_version_matches);
     preg_match('/release\s*=\s*[\'"]([^\'"]+)[\'"]/', $sp_content, $sp_release_matches);
-    
+
     $sp_version = isset($sp_version_matches[1]) ? $sp_version_matches[1] : 'No encontrado';
     $sp_release = isset($sp_release_matches[1]) ? $sp_release_matches[1] : 'No encontrado';
-    
+
     echo '<div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 5px; margin: 10px 0;">';
     echo '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">';
-    
+
     echo '<div>';
     echo '<h4>Student Path</h4>';
     echo '<ul>';
@@ -139,7 +139,7 @@ if (file_exists($student_path_version_file)) {
     echo '<li><strong>Estado:</strong> ✅ Sistema implementado</li>';
     echo '</ul>';
     echo '</div>';
-    
+
     echo '<div>';
     echo '<h4>Personality Test</h4>';
     echo '<ul>';
@@ -148,7 +148,7 @@ if (file_exists($student_path_version_file)) {
     echo '<li><strong>Estado:</strong> ✅ Sistema implementado</li>';
     echo '</ul>';
     echo '</div>';
-    
+
     echo '</div>';
     echo '</div>';
 } else {

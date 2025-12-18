@@ -4,7 +4,7 @@
  * Uso: /blocks/personality_test/test_comparison.php?courseid=1
  */
 
-require_once('../../config.php');
+require_once '../../config.php';
 
 $courseid = required_param('courseid', PARAM_INT);
 
@@ -43,7 +43,7 @@ if ($cap_standard) {
     echo '<a href="' . $csv_url . '" class="btn btn-success" style="margin: 5px; padding: 8px 16px; background: #28a745; color: white; text-decoration: none;">CSV</a>';
     echo '<a href="' . $pdf_url . '" class="btn btn-success" style="margin: 5px; padding: 8px 16px; background: #28a745; color: white; text-decoration: none;">PDF</a>';
     echo '</div>';
-    
+
     echo '<div style="background: #d1ecf1; padding: 15px; border: 1px solid #bee5eb; margin: 10px 0;">';
     echo '<strong>✅ LEARNING STYLE</strong><br>';
     $learning_url = new moodle_url('/blocks/learning_style/download_results.php', ['courseid' => $courseid, 'sesskey' => sesskey()]);

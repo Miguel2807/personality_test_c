@@ -9,8 +9,8 @@
  */
 
 // --- INCLUDES Y CONFIGURACIÓN INICIAL DE MOODLE ---
-require_once(__DIR__ . '/../../config.php');
-require_once($CFG->libdir . '/tcpdf/tcpdf.php');
+require_once __DIR__ . '/../../config.php';
+require_once $CFG->libdir . '/tcpdf/tcpdf.php';
 
 // --- PARÁMETROS Y SEGURIDAD ---
 $courseid = optional_param('courseid', 0, PARAM_INT);
@@ -52,7 +52,7 @@ if ($userid) {
     // Get enrolled students
     $enrolled_students = get_enrolled_users($context, '', 0, 'u.id');
     $enrolled_ids = array_keys($enrolled_students);
-    
+
     $students = array();
     if (!empty($enrolled_ids)) {
         list($insql, $params) = $DB->get_in_or_equal($enrolled_ids, SQL_PARAMS_NAMED);
@@ -173,7 +173,7 @@ class PersonalityReportPDF extends TCPDF {
         $this->Line(PDF_MARGIN_LEFT, $line_y, $this->getPageWidth() - PDF_MARGIN_RIGHT, $line_y);
     }
 
-    // El método Footer() 
+    // El método Footer()
     public function Footer() {
         $this->SetY(-15);
         $this->SetFont('helvetica', 'I', 8);
@@ -223,20 +223,20 @@ if ($is_individual_report) {
     $pdf->SetFont('helvetica', 'B', 14);
     $pdf->Cell(0, 10, get_string('individual_results', 'block_personality_test'), 0, 1, 'C');
     $pdf->Ln(5);
-    
+
     // Información del estudiante
     $pdf->SetFont('helvetica', 'B', 11);
     $pdf->Cell(0, 8, get_string('student_name', 'block_personality_test') . ':', 0, 1, 'L');
     $pdf->SetFont('helvetica', '', 10);
     $pdf->Cell(0, 6, fullname($student_user), 0, 1, 'L');
     $pdf->Ln(2);
-    
+
     $pdf->SetFont('helvetica', 'B', 11);
     $pdf->Cell(0, 8, get_string('email', 'block_personality_test') . ':', 0, 1, 'L');
     $pdf->SetFont('helvetica', '', 10);
     $pdf->Cell(0, 6, $student_user->email, 0, 1, 'L');
     $pdf->Ln(2);
-    
+
     if (!empty($student_user->idnumber)) {
         $pdf->SetFont('helvetica', 'B', 11);
         $pdf->Cell(0, 8, 'ID:', 0, 1, 'L');
@@ -244,13 +244,13 @@ if ($is_individual_report) {
         $pdf->Cell(0, 6, $student_user->idnumber, 0, 1, 'L');
         $pdf->Ln(2);
     }
-    
+
     $pdf->SetFont('helvetica', 'B', 11);
     $pdf->Cell(0, 8, get_string('test_date', 'block_personality_test') . ':', 0, 1, 'L');
     $pdf->SetFont('helvetica', '', 10);
     $pdf->Cell(0, 6, userdate($student_data->created_at, get_string('strftimedatetimeshort', 'langconfig')), 0, 1, 'L');
     $pdf->Ln(5);
-    
+
     // Tipo MBTI
     $pdf->SetFont('helvetica', 'B', 14);
     $pdf->Cell(0, 10, get_string('mbti_type', 'block_personality_test') . ': ' . $student_mbti, 0, 1, 'C');
@@ -258,7 +258,7 @@ if ($is_individual_report) {
     $mbti_dimensions_key = 'mbti_dimensions_' . strtolower($student_mbti);
     $pdf->Cell(0, 6, '(' . get_string($mbti_dimensions_key, 'block_personality_test') . ')', 0, 1, 'C');
     $pdf->Ln(8);
-    
+
     // Descripción del tipo MBTI
     $pdf->SetFont('helvetica', 'B', 11);
     $pdf->Cell(0, 8, get_string('personality_dimensions', 'block_personality_test'), 0, 1, 'L');
@@ -266,21 +266,21 @@ if ($is_individual_report) {
     $mbti_key = 'mbti_' . strtolower($student_mbti);
     $pdf->MultiCell(0, 5, get_string($mbti_key, 'block_personality_test'), 0, 'J');
     $pdf->Ln(8);
-    
+
     // Tabla de puntuaciones detalladas
     $pdf->SetFont('helvetica', 'B', 11);
     $pdf->Cell(0, 8, get_string('detailed_scores', 'block_personality_test'), 0, 1, 'L');
     $pdf->SetFont('helvetica', '', 9);
-    
+
     $html_scores = '<table border="1" cellpadding="4" cellspacing="0">';
     $html_scores .= '<thead><tr style="background-color:#eeeeee; font-weight:bold;">';
     $html_scores .= '<th width="30%" align="center">' . get_string('dimension', 'block_personality_test') . '</th>';
     $html_scores .= '<th width="40%" align="center">' . get_string('score', 'block_personality_test') . '</th>';
     $html_scores .= '<th width="30%" align="center">' . get_string('preference', 'block_personality_test') . '</th>';
     $html_scores .= '</tr></thead><tbody>';
-    
+
     $dimensions = [
-        ['E/I', $student_data->extraversion, $student_data->introversion, 
+        ['E/I', $student_data->extraversion, $student_data->introversion,
          get_string('extraversion', 'block_personality_test'), get_string('introversion', 'block_personality_test')],
         ['S/N', $student_data->sensing, $student_data->intuition,
          get_string('sensing', 'block_personality_test'), get_string('intuition', 'block_personality_test')],
@@ -289,7 +289,7 @@ if ($is_individual_report) {
         ['J/P', $student_data->judging, $student_data->perceptive,
          get_string('judging', 'block_personality_test'), get_string('perceptive', 'block_personality_test')]
     ];
-    
+
     foreach ($dimensions as $dim) {
         $dominant = $dim[1] >= $dim[2] ? $dim[3] : $dim[4];
         $html_scores .= '<tr>';
@@ -298,10 +298,10 @@ if ($is_individual_report) {
         $html_scores .= '<td width="30%" align="center">' . $dominant . '</td>';
         $html_scores .= '</tr>';
     }
-    
+
     $html_scores .= '</tbody></table>';
     $pdf->writeHTML($html_scores, true, false, true, false, '');
-    
+
 } else {
     // ============ REPORTE AGREGADO (ORIGINAL) ============
     // Sección Resumen
@@ -368,7 +368,7 @@ function crearTablaAspectoHTML($titulo_key, $label1_key, $count1, $label2_key, $
 }
 
 
-// Generación y posicionamiento de las 4 tablas de rasgos 
+// Generación y posicionamiento de las 4 tablas de rasgos
 $margen_vertical = 8; // Espacio vertical entre tablas
 
 // Tabla 1
@@ -452,7 +452,7 @@ $descripcion_html = '
 </table>
 ';
 
-$pdf->Ln(10); 
+$pdf->Ln(10);
 $pdf->writeHTML($descripcion_html, true, false, true, false, '');
 
 // --- SALIDA DEL PDF ---

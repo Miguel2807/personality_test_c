@@ -5,7 +5,7 @@
  * @package   block_personality_test
  */
 
-require_once(__DIR__ . '/../../config.php');
+require_once __DIR__ . '/../../config.php';
 
 // Parámetros y Seguridad
 $courseid = optional_param('courseid', 0, PARAM_INT);
@@ -48,7 +48,7 @@ if (!empty($enrolled_ids)) {
 
 if (empty($students)) {
     // Redirigir si no hay datos, con un mensaje
-    redirect(new moodle_url('/course/view.php', ['id' => $course->id]), 
+    redirect(new moodle_url('/course/view.php', ['id' => $course->id]),
              get_string('sin_datos_estudiantes_pdf', 'block_personality_test'), 5);
     exit;
 }
@@ -56,7 +56,7 @@ if (empty($students)) {
 // --- PREPARACIÓN DE DATOS PARA EL INFORME ---
 
 // Contador de tipos MBTI
-$mbti_types = ["ISTJ", "ISFJ", "INFJ", "INTJ", "ISTP", "ISFP", "INFP", "INTP", 
+$mbti_types = ["ISTJ", "ISFJ", "INFJ", "INTJ", "ISTP", "ISFP", "INFP", "INTP",
                "ESTP", "ESFP", "ENFP", "ENTP", "ESTJ", "ESFJ", "ENFJ", "ENTJ"];
 $mbti_count = array_fill_keys($mbti_types, 0);
 
@@ -70,8 +70,8 @@ $aspect_counts = [
 
 // Procesar datos para los resúmenes
 foreach ($students as $entry) {
-    if (!isset($entry->extraversion, $entry->introversion, $entry->sensing, 
-              $entry->intuition, $entry->thinking, $entry->feeling, 
+    if (!isset($entry->extraversion, $entry->introversion, $entry->sensing,
+              $entry->intuition, $entry->thinking, $entry->feeling,
               $entry->judging, $entry->perceptive)) {
         continue;
     }
@@ -182,12 +182,12 @@ fputcsv($output, [
 // Procesar y escribir datos de cada estudiante
 foreach ($students as $entry) {
     // Omitir entradas incompletas
-    if (!isset($entry->extraversion, $entry->introversion, $entry->sensing, 
-              $entry->intuition, $entry->thinking, $entry->feeling, 
+    if (!isset($entry->extraversion, $entry->introversion, $entry->sensing,
+              $entry->intuition, $entry->thinking, $entry->feeling,
               $entry->judging, $entry->perceptive)) {
         continue;
     }
-    
+
     // Obtener información del usuario
     $student_user = $DB->get_record('user', ['id' => $entry->user], 'id, firstname, lastname, idnumber');
     $fullname = fullname($student_user);

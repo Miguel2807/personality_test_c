@@ -1,5 +1,6 @@
 <?php
-require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+define('ADMIN_VIEW_PATH', '/blocks/personality_test/admin_view.php');
+require_once dirname(dirname(dirname(__FILE__))) . '/config.php';
 
 require_login();
 
@@ -13,16 +14,16 @@ $context = context_course::instance($courseid);
 
 $COURSE_ROLED_AS_TEACHER = $DB->get_record_sql("
     SELECT m.id
-    FROM {user} m 
-    LEFT JOIN {role_assignments} m2 ON m.id = m2.userid 
-    LEFT JOIN {context} m3 ON m2.contextid = m3.id 
-    LEFT JOIN {course} m4 ON m3.instanceid = m4.id 
-    WHERE (m3.contextlevel = 50 AND m2.roleid IN (3, 4) AND m.id IN ({$USER->id})) 
-    AND m4.id = {$courseid} 
+    FROM {user} m
+    LEFT JOIN {role_assignments} m2 ON m.id = m2.userid
+    LEFT JOIN {context} m3 ON m2.contextid = m3.id
+    LEFT JOIN {course} m4 ON m3.instanceid = m4.id
+    WHERE (m3.contextlevel = 50 AND m2.roleid IN (3, 4) AND m.id IN ({$USER->id}))
+    AND m4.id = {$courseid}
 ");
 
 if (!$isadmin && (!isset($COURSE_ROLED_AS_TEACHER->id) || !$COURSE_ROLED_AS_TEACHER->id)) {
-    redirect(new moodle_url('/course/view.php', array('id' => $courseid)), 
+    redirect(new moodle_url('/course/view.php', array('id' => $courseid)),
              get_string('no_admin_access', 'block_personality_test'));
 }
 
@@ -32,7 +33,7 @@ $user = $DB->get_record('user', array('id' => $userid), $userfields, MUST_EXIST)
 $test_result = $DB->get_record('personality_test', array('user' => $userid));
 
 if (!$test_result) {
-    redirect(new moodle_url('/blocks/personality_test/admin_view.php', array('cid' => $courseid)), 
+    redirect(new moodle_url(ADMIN_VIEW_PATH, array('cid' => $courseid)),
              get_string('no_test_results', 'block_personality_test'));
 }
 
@@ -51,7 +52,7 @@ echo "<link rel='stylesheet' href='" . $CFG->wwwroot . "/blocks/personality_test
 echo '<nav aria-label="breadcrumb" class="mb-4">';
 echo '<ol class="breadcrumb">';
 echo '<li class="breadcrumb-item"><a href="' . new moodle_url('/course/view.php', array('id' => $courseid)) . '">' . $course->fullname . '</a></li>';
-echo '<li class="breadcrumb-item"><a href="' . new moodle_url('/blocks/personality_test/admin_view.php', array('cid' => $courseid)) . '">' . get_string('admin_manage_title', 'block_personality_test') . '</a></li>';
+echo '<li class="breadcrumb-item"><a href="' . new moodle_url(ADMIN_VIEW_PATH, array('cid' => $courseid)) . '">' . get_string('admin_manage_title', 'block_personality_test') . '</a></li>';
 echo '<li class="breadcrumb-item active" aria-current="page">' . get_string('individual_results', 'block_personality_test') . '</li>';
 echo '</ol>';
 echo '</nav>';
@@ -64,7 +65,7 @@ if ($test_result->is_completed == 0) {
     echo "<h4 class='alert-heading'><i class='fa fa-clock-o'></i> " . get_string('test_in_progress', 'block_personality_test') . "</h4>";
     echo "<p>" . get_string('test_in_progress_message', 'block_personality_test', fullname($user)) . "</p>";
     echo "<hr>";
-    
+
     // Calcular progreso
     $answered = 0;
     for ($i = 1; $i <= 72; $i++) {
@@ -73,9 +74,9 @@ if ($test_result->is_completed == 0) {
             $answered++;
         }
     }
-    
+
     $progress_percentage = round(($answered / 72) * 100, 1);
-    
+
     echo "<p class='mb-1'><strong>" . get_string('progress_label', 'block_personality_test') . ":</strong></p>";
     echo "<div class='progress mb-2' style='height: 30px;'>";
     echo "<div class='progress-bar bg-warning' role='progressbar' style='width: " . $progress_percentage . "%' aria-valuenow='" . $progress_percentage . "' aria-valuemin='0' aria-valuemax='100'>";
@@ -85,15 +86,15 @@ if ($test_result->is_completed == 0) {
     echo "<p><strong>" . get_string('has_answered', 'block_personality_test') . ":</strong> " . get_string('of_72_questions', 'block_personality_test', $answered) . "</p>";
     echo "<p class='mb-0'><em>" . get_string('results_available_when_complete', 'block_personality_test', fullname($user)) . "</em></p>";
     echo "</div>";
-    
+
     // Botón para volver
     echo "<div class='mt-4'>";
-    echo "<a href='" . new moodle_url('/blocks/personality_test/admin_view.php', array('cid' => $courseid)) . "' class='btn btn-secondary'>";
+    echo "<a href='" . new moodle_url(ADMIN_VIEW_PATH, array('cid' => $courseid)) . "' class='btn btn-secondary'>";
     echo "<i class='fa fa-arrow-left'></i> " . get_string('back_to_admin', 'block_personality_test');
     echo "</a>";
     echo "</div>";
     echo "</div>";
-    
+
     echo $OUTPUT->footer();
     exit;
 }
@@ -126,7 +127,7 @@ echo "<p class='text-muted mb-1'><strong>" . get_string('test_date', 'block_pers
 echo "<p class='text-muted mb-1'><strong>" . get_string('mbti_type', 'block_personality_test') . ":</strong> <span class='badge bg-primary fs-6'>" . $mbti . "</span></p>";
 echo "</div>";
 echo "<div class='col-md-4 text-end'>";
-echo "<a href='" . new moodle_url('/blocks/personality_test/admin_view.php', array('cid' => $courseid)) . "' class='btn btn-secondary'>";
+echo "<a href='" . new moodle_url(ADMIN_VIEW_PATH, array('cid' => $courseid)) . "' class='btn btn-secondary'>";
 echo "<i class='fa fa-arrow-left'></i> " . get_string('back_to_admin', 'block_personality_test');
 echo "</a>";
 echo "</div>";
@@ -152,7 +153,7 @@ function render_dimension_bar($label1, $value1, $label2, $value2, $max_value = 1
     $total = $value1 + $value2;
     $percent1 = $total > 0 ? ($value1 / $total) * 100 : 50;
     $percent2 = $total > 0 ? ($value2 / $total) * 100 : 50;
-    
+
     echo "<div class='mb-4'>";
     echo "<div class='d-flex justify-content-between mb-2'>";
     echo "<span><strong>" . $label1 . "</strong> (" . $value1 . ")</span>";
@@ -170,30 +171,30 @@ function render_dimension_bar($label1, $value1, $label2, $value2, $max_value = 1
 }
 
 render_dimension_bar(
-    get_string('extraversion', 'block_personality_test'), 
+    get_string('extraversion', 'block_personality_test'),
     $test_result->extraversion,
-    get_string('introversion', 'block_personality_test'), 
+    get_string('introversion', 'block_personality_test'),
     $test_result->introversion
 );
 
 render_dimension_bar(
-    get_string('sensing', 'block_personality_test'), 
+    get_string('sensing', 'block_personality_test'),
     $test_result->sensing,
-    get_string('intuition', 'block_personality_test'), 
+    get_string('intuition', 'block_personality_test'),
     $test_result->intuition
 );
 
 render_dimension_bar(
-    get_string('thinking', 'block_personality_test'), 
+    get_string('thinking', 'block_personality_test'),
     $test_result->thinking,
-    get_string('feeling', 'block_personality_test'), 
+    get_string('feeling', 'block_personality_test'),
     $test_result->feeling
 );
 
 render_dimension_bar(
-    get_string('judging', 'block_personality_test'), 
+    get_string('judging', 'block_personality_test'),
     $test_result->judging,
-    get_string('perceptive', 'block_personality_test'), 
+    get_string('perceptive', 'block_personality_test'),
     $test_result->perceptive
 );
 
@@ -220,14 +221,14 @@ echo "<p class='text-muted' style='text-align: justify;'>" . get_string($mbti_ke
 echo "</div>";
 
 echo "<div class='d-flex justify-content-center gap-2'>";
-echo "<a href='" . new moodle_url('/blocks/personality_test/download_pdf.php', 
-        array('userid' => $userid, 'cid' => $courseid)) . 
+echo "<a href='" . new moodle_url('/blocks/personality_test/download_pdf.php',
+        array('userid' => $userid, 'cid' => $courseid)) .
         "' class='btn btn-success'>";
 echo "<i class='fa fa-download'></i> " . get_string('download_pdf', 'block_personality_test');
 echo "</a>";
 
-echo "<a href='" . new moodle_url('/blocks/personality_test/admin_view.php', 
-        array('cid' => $courseid, 'action' => 'delete', 'userid' => $userid, 'sesskey' => sesskey())) . 
+echo "<a href='" . new moodle_url(ADMIN_VIEW_PATH,
+        array('cid' => $courseid, 'action' => 'delete', 'userid' => $userid, 'sesskey' => sesskey())) .
         "' class='btn btn-danger' onclick='return confirm(\"" . get_string('confirm_delete_individual', 'block_personality_test') . "\")'>";
 echo "<i class='fa fa-trash'></i> " . get_string('delete_results', 'block_personality_test');
 echo "</a>";

@@ -1,6 +1,6 @@
 <?php
-
-require_once(__DIR__ . '/../../config.php');
+define('PERSONALITY_TEST_VIEW', '/blocks/personality_test/view.php');
+require_once __DIR__ . '/../../config.php';
 
 // Fachada para la lógica de negocio del test de personalidad
 class PersonalityTestFacade {
@@ -106,9 +106,9 @@ class block_personality_test extends block_base
         return false;
     }
 
-    
-    // Función para la vista del Profesor 
-    
+
+    // Función para la vista del Profesor
+
     /**
      * Genera el contenido para la vista del profesor.
      *
@@ -133,7 +133,7 @@ class block_personality_test extends block_base
         // Obtener estudiantes inscritos en el curso
         $context = context_course::instance($COURSE->id);
         $enrolled_students = get_enrolled_users($context, '', 0, 'u.id', null, 0, 0, true);
-        
+
         // Filtrar solo estudiantes (rol 5)
         $student_ids = array();
         foreach ($enrolled_students as $user) {
@@ -145,7 +145,7 @@ class block_personality_test extends block_base
                 }
             }
         }
-        
+
         // Obtener respuestas solo de estudiantes inscritos que hayan COMPLETADO el test
         $students = array();
         if (!empty($student_ids)) {
@@ -164,9 +164,9 @@ class block_personality_test extends block_base
                 $params['completed'] = 0;
                 $in_progress = $DB->count_records_select('personality_test', "user $insql AND is_completed = :completed", $params);
             }
-            
+
             $total_students = count($student_ids);
-            
+
             $content->text .= '<div class="alert alert-info" style="margin: 10px 0;">';
             $content->text .= '<h6 class="mb-2"><i class="fa fa-info-circle"></i> ' . get_string('participation_stats', 'block_personality_test') . '</h6>';
             $content->text .= '<ul class="mb-0 small" style="list-style: none; padding-left: 0;">';
@@ -230,12 +230,12 @@ class block_personality_test extends block_base
         $total_enrolled = count($student_ids);
         $total_completed = count($students);
         $completion_percentage = $total_enrolled > 0 ? round(($total_completed / $total_enrolled) * 100, 1) : 0;
-        
+
         $participation_data = new stdClass();
         $participation_data->completed = $total_completed;
         $participation_data->total = $total_enrolled;
         $participation_data->percentage = $completion_percentage;
-        
+
         $content->text .= html_writer::start_div('alert alert-info', ['style' => 'margin-bottom: 15px; padding: 10px; text-align: center;']);
         $content->text .= html_writer::tag('strong', get_string('participation_stats', 'block_personality_test') . ': ');
         $content->text .= html_writer::tag('span', get_string('students_completed_test', 'block_personality_test', $participation_data));
@@ -299,17 +299,17 @@ $content->text .= html_writer::tag('canvas', '', ['id' => 'mbtiChart', 'style' =
      */
     private function get_test_invitation() {
         global $COURSE;
-        
+
         $output = '';
         $output .= '<div class="personality-invitation-block">';
-        
+
         // Header with user icon
         $output .= '<div class="personality-header text-center mb-3">';
         $output .= '<i class="fa fa-user-circle text-info" style="font-size: 1.8em;"></i>';
         $output .= '<h6 class="mt-2 mb-1">' . get_string('test_title', 'block_personality_test') . '</h6>';
         $output .= '<small class="text-muted">' . get_string('discover_your_personality', 'block_personality_test') . '</small>';
         $output .= '</div>';
-        
+
         // Test description card
         $output .= '<div class="personality-description mb-3">';
         $output .= '<div class="card border-info">';
@@ -327,17 +327,17 @@ $content->text .= html_writer::tag('canvas', '', ['id' => 'mbtiChart', 'style' =
         $output .= '</div>';
         $output .= '</div>';
         $output .= '</div>';
-        
+
         // Action button
         $output .= '<div class="personality-actions text-center">';
-        $url = new moodle_url('/blocks/personality_test/view.php', array('cid' => $COURSE->id));
+        $url = new moodle_url(PERSONALITY_TEST_VIEW, array('cid' => $COURSE->id));
         $output .= '<a href="' . $url . '" class="btn btn-info btn-block">';
         $output .= '<i class="fa fa-rocket"></i> <span>' . get_string('start_test', 'block_personality_test') . '</span>';
         $output .= '</a>';
         $output .= '</div>';
-        
+
         $output .= '</div>';
-        
+
         // Add custom CSS for invitation with high specificity to override Cognitio theme
         $output .= '<style>
         .block_personality_test .personality-invitation-block {
@@ -389,7 +389,7 @@ $content->text .= html_writer::tag('canvas', '', ['id' => 'mbtiChart', 'style' =
             background: linear-gradient(135deg, #138496 0%, #117a8b 100%) !important;
         }
         </style>';
-        
+
         return $output;
     }
 
@@ -399,20 +399,20 @@ $content->text .= html_writer::tag('canvas', '', ['id' => 'mbtiChart', 'style' =
      */
     private function get_continue_test_card($answered_count) {
         global $COURSE;
-        
+
         $output = '';
         $progress_percentage = ($answered_count / 72) * 100;
         $all_answered = ($answered_count >= 72);
-        
+
         $output .= '<div class="personality-invitation-block" style="padding: 15px; background: linear-gradient(135deg, #e3f2fd 0%, #f8f9fa 100%); border-radius: 8px; border: 1px solid #dee2e6;">';
-        
+
         // Header with user icon
         $output .= '<div class="personality-header text-center mb-3">';
         $output .= '<i class="fa fa-user-circle text-info" style="font-size: 1.8em; text-shadow: 0 1px 2px rgba(0,0,0,0.1);"></i>';
         $output .= '<h6 class="mt-2 mb-1">' . get_string('test_title', 'block_personality_test') . '</h6>';
         $output .= '<small class="text-muted">' . get_string('discover_your_personality', 'block_personality_test') . '</small>';
         $output .= '</div>';
-        
+
         // Special alert if all questions answered but not submitted
         if ($all_answered) {
             $output .= '<div class="alert alert-warning mb-3" style="padding: 12px 15px; margin-bottom: 15px; border-left: 4px solid #ffc107; background-color: #fff3cd; border-radius: 4px;">';
@@ -433,7 +433,7 @@ $content->text .= html_writer::tag('canvas', '', ['id' => 'mbtiChart', 'style' =
             $output .= '</small>';
             $output .= '</div>';
         }
-        
+
         // Progress section
         $output .= '<div class="personality-progress mb-3" style="background: white; padding: 12px; border-radius: 5px; border: 1px solid #e9ecef;">';
         $output .= '<div class="d-flex justify-content-between align-items-center mb-2">';
@@ -445,28 +445,28 @@ $content->text .= html_writer::tag('canvas', '', ['id' => 'mbtiChart', 'style' =
         $output .= '</div>';
         $output .= '<small class="text-muted">' . number_format($progress_percentage, 1) . '% ' . get_string('completed', 'block_personality_test') . '</small>';
         $output .= '</div>';
-        
+
         // Call to action button
         $output .= '<div class="personality-actions text-center">';
-        
+
         if ($all_answered) {
             // Go to last page (8) with scroll parameter for finish button
-            $url = new moodle_url('/blocks/personality_test/view.php', array('cid' => $COURSE->id, 'page' => 8, 'scroll_to_finish' => 1));
+            $url = new moodle_url(PERSONALITY_TEST_VIEW, array('cid' => $COURSE->id, 'page' => 8, 'scroll_to_finish' => 1));
             $output .= '<a href="' . $url . '" class="btn btn-success btn-block" style="box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-weight: 500; transition: all 0.3s ease;">';
             $output .= '<i class="fa fa-check-circle"></i> ' . get_string('finish_test_now', 'block_personality_test');
             $output .= '</a>';
         } else {
             // Go to page with first unanswered question
-            $url = new moodle_url('/blocks/personality_test/view.php', array('cid' => $COURSE->id));
+            $url = new moodle_url(PERSONALITY_TEST_VIEW, array('cid' => $COURSE->id));
             $output .= '<a href="' . $url . '" class="btn btn-info btn-block" style="box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-weight: 500; transition: all 0.3s ease;">';
             $output .= '<i class="fa fa-play"></i> ' . get_string('continue_test', 'block_personality_test');
             $output .= '</a>';
         }
-        
+
         $output .= '</div>';
-        
+
         $output .= '</div>';
-        
+
         // Add custom CSS matching learning_style
         $output .= '<style>
         .personality-invitation-block {
@@ -494,12 +494,12 @@ $content->text .= html_writer::tag('canvas', '', ['id' => 'mbtiChart', 'style' =
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         </style>';
-        
+
         return $output;
     }
-    
+
     //  Función para la vista del Profesor
-    
+
 
 
     function get_content()
@@ -608,7 +608,7 @@ $content->text .= html_writer::tag('canvas', '', ['id' => 'mbtiChart', 'style' =
                     $mbti_score .= ($scores["judging"] > $scores["perceptive"]) ? "J" : "P";
 
                     // Datos correspondientes a cada tipo MBTI, ordenados según las 8 dimensiones
-                    
+
                     $mbti_data = [
                         'INTP' => [9,9,3,3,1,1,7,7],
                         'ESFJ' => [1,2,7,8,9,2,3,8],
@@ -702,7 +702,7 @@ $content->text .= html_writer::tag('canvas', '', ['id' => 'mbtiChart', 'style' =
                         }
                     });
                     </script>';
-                    
+
                     // Cerrar div de resultados
                     $this->content->text .= '</div>';
                     } else {
@@ -725,11 +725,11 @@ $content->text .= html_writer::tag('canvas', '', ['id' => 'mbtiChart', 'style' =
                 $teacher_content = $this->_get_teacher_content($DB, $COURSE);
                 $this->content->text = $teacher_content->text;
                 $this->content->footer = $teacher_content->footer;
-                
+
                 // Agregar enlace a la vista administrativa
                 $admin_url = new moodle_url('/blocks/personality_test/admin_view.php', array('cid' => $COURSE->id));
                 $this->content->footer .= html_writer::div(
-                    html_writer::link($admin_url, 
+                    html_writer::link($admin_url,
                         '<i class="fa fa-cog"></i> ' . get_string('admin_manage_title', 'block_personality_test'),
                         array('class' => 'btn btn-primary btn-sm mt-2')
                     ),
